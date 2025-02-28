@@ -11,7 +11,7 @@
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body onload="fadeInContent()">
@@ -73,63 +73,52 @@
                 <h4 class="mb-0">Upload File & Input Data</h4>
             </div>
             <div class="card-body">
-                <form id="uploadForm">
+                <form id="dataForm">
                     <div class="mb-3">
-                        <label class="form-label">Nama:</label>
-                        <input type="text" id="nama" class="form-control" placeholder="Masukkan Nama" required>
+                        <label for="nama" class="form-label">Nama</label>
+                        <input type="text" class="form-control" id="nama" required>
                     </div>
-
                     <div class="mb-3">
-                        <label class="form-label">NIP:</label>
-                        <input type="text" id="nip" class="form-control" placeholder="Masukkan NIP" required>
+                        <label for="nip" class="form-label">NIP</label>
+                        <input type="text" class="form-control" id="nip" required>
                     </div>
-
                     <div class="mb-3">
-                        <label class="form-label">Bulan:</label>
-                        <input type="text" id="bulan" class="form-control" placeholder="Masukkan Bulan" required>
+                        <label for="bulan" class="form-label">Bulan</label>
+                        <select class="form-select" id="bulan">
+                            <option>JANUARI</option>
+                            <option>FEBRUARI</option>
+                            <option>MARET</option>
+                            <option>APRIL</option>
+                            <option>MEI</option>
+                            <option>JUNI</option>
+                            <option>JULI</option>
+                            <option>AGUSTUS</option>
+                            <option>SEPTEMBER</option>
+                            <option>OKTOBER</option>
+                            <option>NOVEMBER</option>
+                            <option>DESEMBER</option>
+                        </select>
                     </div>
-
                     <div class="mb-3">
-                        <label class="form-label">Tahun:</label>
-                        <input type="number" id="tahun" class="form-control" placeholder="Masukkan Tahun" required>
+                        <label for="tahun" class="form-label">Tahun</label>
+                        <input type="number" class="form-control" id="tahun" value="2025" required>
                     </div>
-
                     <div class="mb-3">
-                        <label class="form-label">Upload File:</label>
-                        <input type="file" id="fileUpload" class="form-control" required>
+                        <label for="file_ekin" class="form-label">Upload File e-Kin (PDF)</label>
+                        <input type="file" class="form-control" id="file_ekin" accept="application/pdf" required>
                     </div>
-
-                    <button type="button" class="btn btn-primary w-100" onclick="kirimData()">Kirim Data</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span id="submitText">Kirim</span>
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                    </button>
                 </form>
-
-                <div class="mt-3 alert d-none" id="response"></div>
+        
+                <div id="responseMessage" class="mt-3"></div>
             </div>
         </div>
     
 
-                <script>
-                    function kirimData() {
-                        const url = "https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec"; // Ganti dengan URL Apps Script
-
-                        let formData = new FormData();
-                        formData.append("nama", document.getElementById("nama").value);
-                        formData.append("nip", document.getElementById("nip").value);
-                        formData.append("bulan", document.getElementById("bulan").value);
-                        formData.append("tahun", document.getElementById("tahun").value);
-                        formData.append("fileUpload", document.getElementById("fileUpload").files[0]);
-
-                        fetch(url, {
-                            method: "POST",
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(result => {
-                            document.getElementById("response").innerText = result.message;
-                            console.log("Response:", result);
-                        })
-                        .catch(error => console.error("Error:", error));
-                    }
-                </script>
+               
 
         </div>
         <div id="kontak" class="page">
@@ -138,29 +127,80 @@
         </div>
     </div>
     
-    <script>
-        function fadeInContent() {
-            changeContent('home', document.querySelector('.sidebar a.active'));
-        }
-        
-        function changeContent(page, element) {
-            let pages = document.querySelectorAll('.page');
-            pages.forEach(p => {
-                p.classList.remove('active');
-                p.style.opacity = 0;
-            });
-            let newPage = document.getElementById(page);
-            newPage.classList.add('active');
-            setTimeout(() => {
-                newPage.style.opacity = 1;
-            }, 50);
-            
-            let menuItems = document.querySelectorAll('.sidebar a');
-            menuItems.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-        }
-    </script>
+    
     <script src="myscript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<script>
+    document.getElementById('dataForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Mencegah reload halaman
+
+    let submitBtn = document.getElementById('submitBtn');
+    let submitText = document.getElementById('submitText');
+    let loadingSpinner = document.getElementById('loadingSpinner');
+
+    // Ubah tombol menjadi "Loading..."
+    submitText.innerText = "Loading...";
+    loadingSpinner.classList.remove("d-none");
+    submitBtn.disabled = true;
+
+    let nama = document.getElementById('nama').value;
+    let nip = document.getElementById('nip').value;
+    let bulan = document.getElementById('bulan').value;
+    let tahun = document.getElementById('tahun').value;
+    let fileInput = document.getElementById('file_ekin').files[0];
+
+    if (!fileInput) {
+        Swal.fire("Gagal!", "Harap unggah file PDF!", "error");
+        resetButton();
+        return;
+    }
+
+    let reader = new FileReader();
+    reader.onloadend = function() {
+        let base64File = reader.result.split(",")[1]; // Ambil Base64 data saja
+
+        let formData = new FormData();
+        formData.append("nama", nama);
+        formData.append("nip", nip);
+        formData.append("bulan", bulan);
+        formData.append("tahun", tahun);
+        formData.append("file", base64File); // Kirim file dalam body
+        formData.append("fileName", fileInput.name);
+
+        fetch("https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire("Berhasil!", "File berhasil diunggah dan disimpan!", "success");
+            } else {
+                Swal.fire("Gagal!", data.message, "error");
+            }
+            resetButton();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            Swal.fire("Gagal!", "Terjadi kesalahan, coba lagi!", "error");
+            resetButton();
+        });
+    };
+
+    reader.readAsDataURL(fileInput);
+});
+
+// Fungsi untuk mereset tombol setelah request selesai
+function resetButton() {
+    let submitBtn = document.getElementById('submitBtn');
+    let submitText = document.getElementById('submitText');
+    let loadingSpinner = document.getElementById('loadingSpinner');
+
+    submitText.innerText = "Kirim";
+    loadingSpinner.classList.add("d-none");
+    submitBtn.disabled = false;
+}
+
+</script>
