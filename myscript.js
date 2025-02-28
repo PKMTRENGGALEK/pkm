@@ -34,58 +34,96 @@
 //     .catch((error) => console.error("Error fetching data:", error));
 // });
 $(document).ready(function () {
-  function fetchData() {
-    fetch(
-      "https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec"
-    ) // Ganti dengan URL endpoint doGet
-      .then((response) => response.json())
-      .then((data) => {
-        if (!Array.isArray(data) || data.length === 0) {
-          console.error("Data format tidak valid atau kosong");
-          return;
-        }
+            let allData = []; // Menyimpan data asli
 
-        const tableHeader = $("#table-header");
-        const tableBody = $("#table-body");
+            function fetchData() {
+                fetch("https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!Array.isArray(data) || data.length === 0) {
+                            console.error("Data tidak valid atau kosong");
+                            return;
+                        }
 
-        tableHeader.empty();
-        tableBody.empty();
+                        allData = data; // Simpan data asli
 
-        // Membuat header tabel
-        const headers = Object.keys(data[0]);
-        let headerRow = "<tr>";
-        headers.forEach((header) => {
-          headerRow += `<th>${header}</th>`;
+                        // Ambil daftar tahun unik dari data
+                        let tahunSet = new Set(data.map(item => item.Tahun));
+                        let tahunDropdown = $("#filter-tahun");
+                        tahunDropdown.empty().append('<option value="">Pilih Tahun</option>');
+                        tahunSet.forEach(tahun => {
+                            tahunDropdown.append(`<option value="${tahun}">${tahun}</option>`);
+                        });
+
+                        // Sembunyikan tabel saat awal
+                        $("#table-container").hide();
+                    })
+                    .catch(error => console.error("Gagal mengambil data:", error));
+            }
+
+            function updateTable(filteredData) {
+                const tableHeader = $("#table-header");
+                const tableBody = $("#table-body");
+
+                tableHeader.empty();
+                tableBody.empty();
+
+                if (filteredData.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Data Tidak Ditemukan',
+                        text: 'Silakan coba filter lain!',
+                        confirmButtonColor: '#007bff'
+                    });
+                    $("#table-container").hide(); // Sembunyikan tabel jika tidak ada data
+                    return;
+                }
+
+                // Buat header tabel
+                const headers = Object.keys(filteredData[0]);
+                headers.forEach(header => {
+                    tableHeader.append(`<th>${header}</th>`);
+                });
+
+                // Isi tabel dengan data
+                filteredData.forEach(row => {
+                    let rowData = "<tr>";
+                    headers.forEach(header => {
+                        rowData += `<td>${row[header] || "-"}</td>`;
+                    });
+                    rowData += "</tr>";
+                    tableBody.append(rowData);
+                });
+
+                // Inisialisasi DataTable
+                if ($.fn.DataTable.isDataTable("#data-table")) {
+                    $("#data-table").DataTable().destroy();
+                }
+                $("#data-table").DataTable({
+                    responsive: true,
+                    autoWidth: false,
+                    lengthMenu: [5, 10, 25, 50],
+                    pageLength: 10
+                });
+
+                // Tampilkan tabel jika ada data
+                $("#table-container").show();
+            }
+
+            $("#btn-cari").click(function () {
+                let selectedTahun = $("#filter-tahun").val();
+                let selectedBulan = $("#filter-bulan").val();
+
+                let filteredData = allData.filter(item =>
+                    (selectedTahun === "" || item.Tahun == selectedTahun) &&
+                    (selectedBulan === "" || item.Bulan == selectedBulan)
+                );
+
+                updateTable(filteredData);
+            });
+
+            fetchData();
         });
-        headerRow += "</tr>";
-        tableHeader.append(headerRow);
-
-        // Membuat isi tabel
-        data.forEach((row) => {
-          let rowData = "<tr>";
-          headers.forEach((header) => {
-            rowData += `<td>${row[header] || ""}</td>`; // Pastikan nilai tidak undefined
-          });
-          rowData += "</tr>";
-          tableBody.append(rowData);
-        });
-
-        // Inisialisasi ulang DataTable dengan opsi `columns`
-        if ($.fn.DataTable.isDataTable("#data-table")) {
-          $("#data-table").DataTable().destroy();
-        }
-        $("#data-table").DataTable({
-          destroy: true, // Pastikan tabel dapat di-reset
-          retrieve: true, // Hindari error jika tabel sudah ada
-          columns: headers.map((header) => ({ data: header, title: header })),
-        });
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }
-
-  fetchData();
-  setInterval(fetchData, 5000); // Refresh otomatis setiap 5 detik
-});
 
 // paging
 function fadeInContent() {
