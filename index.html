@@ -177,6 +177,7 @@
         .then(data => {
             if (data.status === "success") {
                 Swal.fire("Berhasil!", "File berhasil diunggah dan disimpan!", "success");
+                document.getElementById('dataForm').reset(); // Reset form setelah sukses
             } else {
                 Swal.fire("Gagal!", data.message, "error");
             }
@@ -202,5 +203,6 @@ function resetButton() {
     loadingSpinner.classList.add("d-none");
     submitBtn.disabled = false;
 }
+
 
 </script>
