@@ -86,7 +86,6 @@ $(document).ready(function () {
         // if (header === "File_ekin" && cellData.startsWith("https://")) {
         //   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
         // }
-        // rowData += `<td>${cellData}</td>`;
         if (header === "File_ekin" && cellData.startsWith("https://")) {
   // Jika link adalah Google Drive, ubah ke format direct link
   if (cellData.includes("drive.google.com/file/d/")) {
@@ -94,8 +93,8 @@ $(document).ready(function () {
     cellData = `https://drive.google.com/uc?export=download&id=${fileId}`;
   }
   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
-
-        }
+}
+        rowData += `<td>${cellData}</td>`;
       });
       rowData += "</tr>";
       tableBody.append(rowData);
@@ -134,7 +133,7 @@ $(document).ready(function () {
 
   // // Auto-refresh setiap 30 detik
   // setInterval(fetchData, 3000);
-});
+});  
 
 // paging
 function fadeInContent() {
