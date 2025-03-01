@@ -279,3 +279,6 @@ function resetButton() {
   loadingSpinner.classList.add("d-none");
   submitBtn.disabled = false;
 }
+function refreshPage() {
+  location.reload();
+}
