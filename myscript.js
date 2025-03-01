@@ -22,6 +22,118 @@ $(document).ready(function () {
   });
 });
 // tampildata
+// $(document).ready(function () {
+//   let allData = []; // Menyimpan data asli
+
+//   function fetchData() {
+//     fetch(
+//       "https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec"
+//     )
+//       .then((response) => response.json())
+//       .then((data) => {
+//         if (!Array.isArray(data) || data.length === 0) {
+//           console.error("Data tidak valid atau kosong");
+//           return;
+//         }
+
+//         allData = data; // Simpan data asli
+
+        // Ambil daftar tahun unik dari data
+        // let tahunSet = new Set(data.map((item) => item.Tahun));
+        // let tahunDropdown = $("#filter-tahun");
+        // tahunDropdown.empty().append('<option value="">Pilih Tahun</option>');
+        // tahunSet.forEach((tahun) => {
+        //   tahunDropdown.append(`<option value="${tahun}">${tahun}</option>`);
+        // });
+
+        // Sembunyikan tabel saat awal
+//         $("#table-container").hide();
+//       })
+//       .catch((error) => console.error("Gagal mengambil data:", error));
+//   }
+
+//   function updateTable(filteredData) {
+//     const tableHeader = $("#table-header");
+//     const tableBody = $("#table-body");
+
+//     tableHeader.empty();
+//     tableBody.empty();
+
+//     if (filteredData.length === 0) {
+//       Swal.fire({
+//         icon: "warning",
+//         title: "Data Tidak Ditemukan",
+//         text: "Silakan coba filter lain!",
+//         confirmButtonColor: "#007bff",
+//       });
+//       $("#table-container").hide(); // Sembunyikan tabel jika tidak ada data
+//       return;
+//     }
+
+//     // Buat header tabel
+//     const headers = Object.keys(filteredData[0]);
+//     headers.forEach((header) => {
+//       tableHeader.append(`<th>${header}</th>`);
+//     });
+
+//     // Isi tabel dengan data
+//     filteredData.forEach((row) => {
+//       let rowData = "<tr>";
+//       headers.forEach((header) => {
+//         let cellData = row[header] || "-"; // Jika kosong, tampilkan "-"
+
+//         // Pastikan File_ekin yang berisi link diubah menjadi tombol
+//         // if (header === "File_ekin" && cellData.startsWith("https://")) {
+//         //   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
+//         // }
+//         if (header === "File_ekin" && cellData.startsWith("https://")) {
+//   // Jika link adalah Google Drive, ubah ke format direct link
+//   if (cellData.includes("drive.google.com/file/d/")) {
+//     let fileId = cellData.split("/d/")[1].split("/")[0]; // Ambil ID file
+//     cellData = `https://drive.google.com/uc?export=download&id=${fileId}`;
+//   }
+//   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
+// }
+//         rowData += `<td>${cellData}</td>`;
+//       });
+//       rowData += "</tr>";
+//       tableBody.append(rowData);
+//     });
+
+//     // Inisialisasi DataTable
+//     if ($.fn.DataTable.isDataTable("#data-table")) {
+//       $("#data-table").DataTable().destroy();
+//     }
+//     $("#data-table").DataTable({
+//       responsive: true,
+//       autoWidth: false,
+//       lengthMenu: [5, 10, 25, 50],
+//       pageLength: 10,
+//     });
+
+//     // Tampilkan tabel jika ada data
+//     $("#table-container").show();
+//   }
+
+//   $("#btn-cari").click(function () {
+//     let selectedTahun = $("#filter-tahun").val();
+//     let selectedBulan = $("#filter-bulan").val();
+
+//     let filteredData = allData.filter(
+//       (item) =>
+//         (selectedTahun === "" || item.Tahun == selectedTahun) &&
+//         (selectedBulan === "" || item.Bulan == selectedBulan)
+//     );
+
+//     updateTable(filteredData);
+//   });
+
+//   // Panggil fetchData pertama kali
+//   fetchData();
+
+//   // // Auto-refresh setiap 30 detik
+//   // setInterval(fetchData, 3000);
+// });  
 $(document).ready(function () {
   let allData = []; // Menyimpan data asli
 
@@ -37,14 +149,6 @@ $(document).ready(function () {
         }
 
         allData = data; // Simpan data asli
-
-        // Ambil daftar tahun unik dari data
-        // let tahunSet = new Set(data.map((item) => item.Tahun));
-        // let tahunDropdown = $("#filter-tahun");
-        // tahunDropdown.empty().append('<option value="">Pilih Tahun</option>');
-        // tahunSet.forEach((tahun) => {
-        //   tahunDropdown.append(`<option value="${tahun}">${tahun}</option>`);
-        // });
 
         // Sembunyikan tabel saat awal
         $("#table-container").hide();
@@ -83,17 +187,14 @@ $(document).ready(function () {
         let cellData = row[header] || "-"; // Jika kosong, tampilkan "-"
 
         // Pastikan File_ekin yang berisi link diubah menjadi tombol
-        // if (header === "File_ekin" && cellData.startsWith("https://")) {
-        //   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
-        // }
         if (header === "File_ekin" && cellData.startsWith("https://")) {
-  // Jika link adalah Google Drive, ubah ke format direct link
-  if (cellData.includes("drive.google.com/file/d/")) {
-    let fileId = cellData.split("/d/")[1].split("/")[0]; // Ambil ID file
-    cellData = `https://drive.google.com/uc?export=download&id=${fileId}`;
-  }
-  cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
-}
+          // Jika link adalah Google Drive, ubah ke format direct link
+          if (cellData.includes("drive.google.com/file/d/")) {
+            let fileId = cellData.split("/d/")[1].split("/")[0]; // Ambil ID file
+            cellData = `https://drive.google.com/uc?export=download&id=${fileId}`;
+          }
+          cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
+        }
         rowData += `<td>${cellData}</td>`;
       });
       rowData += "</tr>";
@@ -131,9 +232,9 @@ $(document).ready(function () {
   // Panggil fetchData pertama kali
   fetchData();
 
-  // // Auto-refresh setiap 30 detik
-  // setInterval(fetchData, 3000);
-});  
+  // Auto-refresh setiap 30 detik
+  // setInterval(fetchData, 30000);
+});
 
 // paging
 function fadeInContent() {
