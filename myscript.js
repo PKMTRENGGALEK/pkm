@@ -95,7 +95,7 @@ $(document).ready(function () {
   }
   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
 
-
+        }
       });
       rowData += "</tr>";
       tableBody.append(rowData);
