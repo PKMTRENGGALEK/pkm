@@ -94,7 +94,7 @@ $(document).ready(function () {
     cellData = `https://drive.google.com/uc?export=download&id=${fileId}`;
   }
   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
-}
+
 
       });
       rowData += "</tr>";
