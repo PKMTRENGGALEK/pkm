@@ -189,10 +189,7 @@
 </body>
 </html>
 <script>
-    // input data
-document
-  .getElementById("dataForm")
-  .addEventListener("submit", function (event) {
+    document.getElementById("dataForm").addEventListener("submit", function (event) {
     event.preventDefault(); // Mencegah reload halaman
 
     let submitBtn = document.getElementById("submitBtn");
@@ -211,62 +208,61 @@ document
     let fileInput = document.getElementById("file_ekin").files[0];
 
     if (!fileInput) {
-      Swal.fire("Gagal!", "Harap unggah file PDF!", "error");
-      resetButton();
-      return;
+        Swal.fire("Gagal!", "Harap unggah file PDF!", "error");
+        resetButton();
+        return;
     }
 
     let reader = new FileReader();
     reader.onloadend = function () {
-      let base64File = reader.result.split(",")[1]; // Ambil Base64 data saja
+        let base64File = reader.result.split(",")[1]; // Ambil Base64 data saja
 
-      let formData = new FormData();
-      formData.append("nama", nama);
-      formData.append("nip", nip);
-      formData.append("bulan", bulan);
-      formData.append("tahun", tahun);
-      formData.append("file", base64File); // Kirim file dalam body
-      formData.append("fileName", fileInput.name);
+        let formData = new FormData();
+        formData.append("nama", nama);
+        formData.append("nip", nip);
+        formData.append("bulan", bulan);
+        formData.append("tahun", tahun);
+        formData.append("file", base64File); // Kirim file dalam body
+        formData.append("fileName", fileInput.name);
 
-      fetch(
-        "https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec",
-        {
-          method: "POST",
-          body: formData,
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === "success") {
-            Swal.fire(
-              "Berhasil!",
-              "File berhasil diunggah dan disimpan!",
-              "success"
-            );
-            document.getElementById("dataForm").reset(); // Reset form setelah sukses
-          } else {
-            Swal.fire("Gagal!", data.message, "error");
-          }
-          resetButton();
+        fetch("https://script.google.com/macros/s/AKfycbxsue6pFrEQW_CoBIJUZ2bIfS03OGJzn-GJof5vMg91wmh_PCdsEg408uEzLPp4_yFmVw/exec", {  // Ganti dengan URL Web App dari Apps Script
+            method: "POST",
+            body: formData
         })
-        .catch((error) => {
-          console.error("Error:", error);
-          Swal.fire("Gagal!", "Terjadi kesalahan, coba lagi!", "error");
-          resetButton();
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire(
+                    "Berhasil!",
+                    "File berhasil diunggah dan disimpan!",
+                    "success"
+                );
+                document.getElementById("dataForm").reset(); // Reset form setelah sukses
+            } else {
+                Swal.fire("Gagal!", data.message, "error");
+            }
+            resetButton();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            Swal.fire("Gagal!", "Terjadi kesalahan, coba lagi!", "error");
+            resetButton();
         });
     };
 
     reader.readAsDataURL(fileInput);
-  });
+});
 
 // Fungsi untuk mereset tombol setelah request selesai
 function resetButton() {
-  let submitBtn = document.getElementById("submitBtn");
-  let submitText = document.getElementById("submitText");
-  let loadingSpinner = document.getElementById("loadingSpinner");
+    let submitBtn = document.getElementById("submitBtn");
+    let submitText = document.getElementById("submitText");
+    let loadingSpinner = document.getElementById("loadingSpinner");
 
-  submitText.innerText = "Kirim";
-  loadingSpinner.classList.add("d-none");
-  submitBtn.disabled = false;
+    submitText.innerText = "Kirim";
+    loadingSpinner.classList.add("d-none");
+    submitBtn.disabled = false;
 }
+
+ 
 </script>
