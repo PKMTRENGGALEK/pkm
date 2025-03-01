@@ -83,10 +83,19 @@ $(document).ready(function () {
         let cellData = row[header] || "-"; // Jika kosong, tampilkan "-"
 
         // Pastikan File_ekin yang berisi link diubah menjadi tombol
+        // if (header === "File_ekin" && cellData.startsWith("https://")) {
+        //   cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
+        // }
+        // rowData += `<td>${cellData}</td>`;
         if (header === "File_ekin" && cellData.startsWith("https://")) {
-          cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
-        }
-        rowData += `<td>${cellData}</td>`;
+  // Jika link adalah Google Drive, ubah ke format direct link
+  if (cellData.includes("drive.google.com/file/d/")) {
+    let fileId = cellData.split("/d/")[1].split("/")[0]; // Ambil ID file
+    cellData = `https://drive.google.com/uc?export=download&id=${fileId}`;
+  }
+  cellData = `<a href="${cellData}" target="_blank" class="btn btn-sm btn-primary">Lihat File</a>`;
+}
+
       });
       rowData += "</tr>";
       tableBody.append(rowData);
